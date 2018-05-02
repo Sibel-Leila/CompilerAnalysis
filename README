@@ -1,0 +1,80 @@
+------------------------------ Tema 2 - ASC ----------------------------------
+
+Nume: Bechir Sibel-Leila
+Grupa: 332CC
+
+Cuprins:
+1. Tabel cu rezultatele
+2. Descrierea implementarilor
+    2.1. blas
+    2.2. neoptimizat
+    2.3. neoptimizat cu flag-uri
+    2.4. optimiat
+3. Comparatie intre implenetari
+4. Comparatie intre compilatoare
+5. grafic
+6. Others
+
+_________________________
+1. Tabel cu rezultatele
+       |        BLAS         |          NEOPT          |       NEOPT FLAGS     |          OPT
+       | GCC      | ICC      | GCC        | ICC        | GCC       | ICC       | GCC       | ICC
+TEST 1 | 0.697680 | 1.216116 |  16.369259 |  15.354754 |  4.849492 |  2.300902 | 11.187524 | 10.917722
+TEST 2 | 1.058723 | 2.155627 |  28.279686 |  31.785072 |  9.299309 |  5.785253 | 18.986835 | 19.136433
+TEST 3 | 1.553154 | 3.021833 |  44.366024 |  47.937984 | 11.585947 |  6.531257 | 29.374424 | 30.828232
+TEST 4 | 2.277574 | 4.547166 |  81.252319 |  80.192688 | 22.792912 | 14.810931 | 44.350842 | 44.469048
+TEST 5 | 3.320549 | 6.137760 | 113.289955 | 116.382454 | 31.585968 | 16.564013 | 62.127895 | 65.200912
+
+______________________________
+2. Descrierea implementarilor
+_____________
+    2.1. blas
+Am apelat cblas_zsyrk, parametrii i-am luat din http://www.netlib.org/blas/cblas.h .
+
+Pentru alfa = 0 si beta = 0 trebuiau luate astfel pentru ca 
+    C_gradN = alfa*A*B + beta*C_grad(N-1) 
+adica nu aveam nevoie de elementele lui C din iteratia aterioara.
+____________________
+    2.2. neoptimizat
+Am stocat transpusa in matricea B ca apoi sa o folosesc la inmultire.
+
+Am parcurs numai partea supaerioara si am calculat partea reala si partea imaginara.
+
+M-au ajutat formulele:
+    (a + bi)(c + di) = ac - bd + i(ad + bc)
+unde:
+    a = A[2 * (i * N + k)] 
+    b = A[2 * (i * N + k) + 1]
+    c = B[2 * (i * N + k)]
+    d = B[2 * (i * N + k) + 1]
+
+________________________________
+    2.3. neoptimizat cu flag-uri
+Am folosit codul din varianta neoptimizata numai ca am adaugat argumentul -O3 compilatorului care face optimizarea.
+
+"-O3    Optimize yet more.  -O3 turns on all optimizations specified by -O2
+        and also turns on the -finline-functions, -funswitch-loops,
+        -fpredictive-commoning, -fgcse-after-reload, -ftree-vectorize,
+        -fvect-cost-model, -ftree-partial-pre and -fipa-cp-clone options." --man gcc
+__________________
+    2.4. optimizat
+Am consultat laboratorul 5 si am inversat for-urile pentru optimizare
+
+_________________________________________________________________
+3. Comparatie intre implenetari (BLAS vs NEOPT vs OPT_M vs OPT_F)
+
+BLAS este cel mai optim, urmat de cel NEOPTIMIZAT cu FLAG-uri apoi cel OPTIMIZAT si la final cel NEOPTIM
+
+_____________________________________________
+4. Comparatie intre compilatoare (ICC vs GCC)
+In general gcc-ul este optim fata de icc, mai putin cand exista flagul pentru optimizare al comiplatorului.
+
+_________
+5. Grafic
+Este realizat in excel.
+
+_________
+6. Others
+Apr 15 20:16:49 2018
+
+Am testat pe fep pe coada ibm-dp.q
